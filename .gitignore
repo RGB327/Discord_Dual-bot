@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Secrets & local config
+.env
+.env.*
+config.json
+token.json
+*.key
+*.pem
+docker-compose.yml
+.Dockerfile
+
+# SQL / DB
+sql/
+*.sql
+!schema.sql
+*.db
+*.sqlite
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS & editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Runtime
+pids/
+*.pid
+
