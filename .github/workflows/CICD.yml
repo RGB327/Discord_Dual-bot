@@ -42,6 +42,14 @@ jobs:
                 key: ${{ secrets.SSH_PRIVATE_KEY }}
                 debug: true
                 script: |
+                    mkdir -p ${{ secrets.DEPLOY_PATH }}
                     cd ${{ secrets.DEPLOY_PATH }}
-                    git pull origin main
+                    if [ -d .git ]; then
+                      git pull origin main
+                    else
+                      git clone https://github.com/RGB327/Discord_Dual-bot.git .
+                    fi
+                    cat > .env << 'ENVEOF'
+                    ${{ secrets.ENV_FILE }}
+                    ENVEOF
                     docker compose up -d --build
