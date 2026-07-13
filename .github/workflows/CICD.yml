@@ -1,0 +1,19 @@
+name: CICD
+
+on:
+    push:
+        branches: [main]
+
+jobs:
+    CI: 
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v6
+            - uses: actions/setup-node@v6
+              with:
+                node-version: 20
+                cache: npm
+        
+    
+
+        

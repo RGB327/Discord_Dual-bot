@@ -1,6 +1,7 @@
+require('dotenv').config();
 const { Client, GatewayIntentBits, Collection, REST, Routes, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
-const { token, clientId, guildId } = require('./config.json');
+const { DISCORD_TOKEN: token } = process.env;
 const pool = require('./db');
 
 const client = new Client({

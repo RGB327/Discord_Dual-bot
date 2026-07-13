@@ -8,6 +8,7 @@ build/
 # Secrets & local config
 .env
 .env.*
+!.env.example
 config.json
 token.json
 *.key
