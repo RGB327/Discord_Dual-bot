@@ -39,7 +39,7 @@ jobs:
                 host: ${{ secrets.SSH_HOST }}
                 port: ${{ secrets.SSH_PORT }}
                 username: ${{ secrets.SSH_USERNAME }}
-                password: ${{ secrets.SSH_PASSWORD }}
+                key: ${{ secrets.SSH_PRIVATE_KEY }}
                 script: |
                     cd ${{ secrets.DEPLOY_PATH }}
                     git pull origin main
