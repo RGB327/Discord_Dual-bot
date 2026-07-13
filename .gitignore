@@ -13,7 +13,6 @@ config.json
 token.json
 *.key
 *.pem
-docker-compose.yml
 .Dockerfile
 
 # SQL / DB
