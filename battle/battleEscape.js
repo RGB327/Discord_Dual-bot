@@ -108,50 +108,54 @@ async function sendEscapeSelect(i, battleId, client) {
   });
 
   collector.on('collect', async (btn) => {
-    const id = btn.customId;
+    try {
+      const id = btn.customId;
 
-    if (id === `escape_select_${battleId}`) {
-      selectedIndex = parseInt(btn.values[0]);
-      return btn.update({
-        embeds: [makeDetailEmbed(cards[selectedIndex])],
-        components: [makeSelectMenu(), makeButtons(true)]
-      });
-    }
+      if (id === `escape_select_${battleId}`) {
+        selectedIndex = parseInt(btn.values[0]);
+        return await btn.update({
+          embeds: [makeDetailEmbed(cards[selectedIndex])],
+          components: [makeSelectMenu(), makeButtons(true)]
+        });
+      }
 
-    if (id === `escape_cancel_${battleId}`) {
-      collector.stop('cancelled');
-      return btn.update({ content: '탈주가 취소되었습니다.', embeds: [], components: [] });
-    }
+      if (id === `escape_cancel_${battleId}`) {
+        collector.stop('cancelled');
+        return await btn.update({ content: '탈주가 취소되었습니다.', embeds: [], components: [] });
+      }
 
-    if (id === `escape_confirm_${battleId}`) {
-      if (selectedIndex === null) return;
-      collector.stop('confirmed');
+      if (id === `escape_confirm_${battleId}`) {
+        if (selectedIndex === null) return;
+        collector.stop('confirmed');
 
-      const card = cards[selectedIndex];
+        const card = cards[selectedIndex];
 
-      // 탈주 플래그 + 변경할 카드 id 저장
-      const [[battle]] = await pool.query(`SELECT * FROM battles WHERE id = ?`, [battleId]);
-      const escapeCol  = battle.player1_id === userId ? 'p1_escape' : 'p2_escape';
-      const escapeCardCol = battle.player1_id === userId ? 'p1_escape_card_id' : 'p2_escape_card_id';
+        // 탈주 플래그 + 변경할 카드 id 저장
+        const [[battle]] = await pool.query(`SELECT * FROM battles WHERE id = ?`, [battleId]);
+        const escapeCol  = battle.player1_id === userId ? 'p1_escape' : 'p2_escape';
+        const escapeCardCol = battle.player1_id === userId ? 'p1_escape_card_id' : 'p2_escape_card_id';
 
-      await pool.query(
-        `UPDATE battles SET ${escapeCol} = 1, ${escapeCardCol} = ? WHERE id = ?`,
-        [card.id, battleId]
-      );
+        await pool.query(
+          `UPDATE battles SET ${escapeCol} = 1, ${escapeCardCol} = ? WHERE id = ?`,
+          [card.id, battleId]
+        );
 
-      return btn.update({
-        embeds: [
-          new EmbedBuilder()
-            .setTitle('탈주 확정!')
-            .setDescription(
-              `이번 턴 종료 후 **${card.name}**으로 변경됩니다.\n` +
-              `모든 디버프가 해제됩니다.\n\n` +
-              `턴 종료 버튼을 눌러주세요.`
-            )
-            .setColor(0xe67e22)
-        ],
-        components: []
-      });
+        return await btn.update({
+          embeds: [
+            new EmbedBuilder()
+              .setTitle('탈주 확정!')
+              .setDescription(
+                `이번 턴 종료 후 **${card.name}**으로 변경됩니다.\n` +
+                `모든 디버프가 해제됩니다.\n\n` +
+                `턴 종료 버튼을 눌러주세요.`
+              )
+              .setColor(0xe67e22)
+          ],
+          components: []
+        });
+      }
+    } catch (err) {
+      console.error('[battleEscape collect] 오류:', err);
     }
   });
 

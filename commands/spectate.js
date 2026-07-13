@@ -90,13 +90,17 @@ module.exports = {
     const collector = msg.createMessageComponentCollector({ time: 30_000, max: 1 });
 
     collector.on('collect', async (i) => {
-      const battleId = i.values[0];
-      addSpectator(battleId);
-      const b = battles.find(b => String(b.id) === battleId);
-      await i.update({
-        content: `**${b.p1_name}** vs **${b.p2_name}** (턴 ${b.turn_number}) 관전 시작!\n턴 결과가 DM으로 전송됩니다.`,
-        components: []
-      });
+      try {
+        const battleId = i.values[0];
+        addSpectator(battleId);
+        const b = battles.find(b => String(b.id) === battleId);
+        await i.update({
+          content: `**${b.p1_name}** vs **${b.p2_name}** (턴 ${b.turn_number}) 관전 시작!\n턴 결과가 DM으로 전송됩니다.`,
+          components: []
+        });
+      } catch (err) {
+        console.error('[spectate collect] 오류:', err);
+      }
     });
 
     collector.on('end', async (collected) => {

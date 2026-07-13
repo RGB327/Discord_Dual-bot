@@ -21,12 +21,15 @@ module.exports = {
     const hostId   = interaction.user.id;
     const hostName = interaction.user.username;
 
+    // DB 조회가 밀려 3초 응답 제한을 넘겨도 인터랙션이 만료되지 않도록 먼저 ack
+    await interaction.deferReply({ ephemeral: true });
+
     try {
       // 관전 중 확인
       const { pendingSpectators: ps, battleSpectators: bs } = require('../battle/spectatorStore');
       const isSpectating = [...bs.values()].some(s => s.has(hostId)) || [...ps.values()].some(s => s.has(hostId));
       if (isSpectating) {
-        return interaction.reply({ content: '관전 중에는 매칭을 생성할 수 없습니다. /관전취소 후 다시 시도하세요.', ephemeral: true });
+        return interaction.editReply({ content: '관전 중에는 매칭을 생성할 수 없습니다. /관전취소 후 다시 시도하세요.' });
       }
 
       // 1. 등록 확인
@@ -34,7 +37,7 @@ module.exports = {
         `SELECT user_id FROM users WHERE user_id = ?`, [hostId]
       );
       if (!hostUser) {
-        return interaction.reply({ content: '먼저 /등록 을 해주세요.', ephemeral: true });
+        return interaction.editReply({ content: '먼저 /등록 을 해주세요.' });
       }
 
       // 2. 카드 보유 확인
@@ -42,7 +45,7 @@ module.exports = {
         `SELECT card_id FROM user_cards WHERE user_id = ? LIMIT 1`, [hostId]
       );
       if (hostCards.length === 0) {
-        return interaction.reply({ content: '보유한 카드가 없어 매칭을 시작할 수 없습니다.', ephemeral: true });
+        return interaction.editReply({ content: '보유한 카드가 없어 매칭을 시작할 수 없습니다.' });
       }
 
       // 3. 진행 중 전투 확인
@@ -52,7 +55,7 @@ module.exports = {
           AND status NOT IN ('ended', 'cancelled')
       `, [hostId, hostId]);
       if (ongoingBattle.length > 0) {
-        return interaction.reply({ content: '이미 진행 중인 전투가 있습니다.', ephemeral: true });
+        return interaction.editReply({ content: '이미 진행 중인 전투가 있습니다.' });
       }
 
       // 4. 매칭 대기 중 확인 (match_queue)
@@ -60,7 +63,7 @@ module.exports = {
         `SELECT user_id FROM match_queue WHERE user_id = ?`, [hostId]
       );
       if (inQueue) {
-        return interaction.reply({ content: '이미 매칭 대기 중입니다.', ephemeral: true });
+        return interaction.editReply({ content: '이미 매칭 대기 중입니다.' });
       }
 
       // 5. 매칭 대기열 등록
@@ -92,7 +95,8 @@ module.exports = {
           .setStyle(ButtonStyle.Secondary)
       );
 
-      const message = await interaction.reply({
+      await interaction.editReply({ content: '✅ 매칭 방을 생성했습니다.' });
+      const message = await interaction.followUp({
         embeds: [embed],
         components: [row],
         fetchReply: true
@@ -307,7 +311,11 @@ module.exports = {
       console.error('[match] 오류:', err);
       // 오류 시 대기열 제거
       await pool.query(`DELETE FROM match_queue WHERE user_id = ?`, [hostId]).catch(() => {});
-      await interaction.reply({ content: '매칭 생성 중 오류가 발생했습니다.', ephemeral: true }).catch(() => {});
+      if (interaction.deferred || interaction.replied) {
+        await interaction.editReply({ content: '매칭 생성 중 오류가 발생했습니다.' }).catch(() => {});
+      } else {
+        await interaction.reply({ content: '매칭 생성 중 오류가 발생했습니다.', ephemeral: true }).catch(() => {});
+      }
     }
   }
 };

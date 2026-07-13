@@ -78,10 +78,8 @@ client.login(token);
 
 process.on('unhandledRejection', (err) => {
   console.error('[UnhandledRejection]', err);
-  process.exit(1);
 });
 
 process.on('uncaughtException', (err) => {
   console.error('[UncaughtException]', err);
-  process.exit(1);
 });
