@@ -47,4 +47,5 @@ jobs:
                     cat > .env << 'ENVEOF'
                     ${{ secrets.ENV_FILE }}
                     ENVEOF
+                    docker rm -f discord-bot 2>/dev/null || true
                     docker compose up -d --build
