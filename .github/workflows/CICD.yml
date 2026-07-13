@@ -42,13 +42,8 @@ jobs:
                 key: ${{ secrets.SSH_PRIVATE_KEY }}
                 debug: true
                 script: |
-                    mkdir -p ${{ secrets.DEPLOY_PATH }}
                     cd ${{ secrets.DEPLOY_PATH }}
-                    if [ -d .git ]; then
-                      git pull origin main
-                    else
-                      git clone https://github.com/RGB327/Discord_Dual-bot.git .
-                    fi
+                    git pull origin main
                     cat > .env << 'ENVEOF'
                     ${{ secrets.ENV_FILE }}
                     ENVEOF
