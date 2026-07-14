@@ -39,7 +39,7 @@ jobs:
                 host: ${{ secrets.SSH_HOST }}
                 port: ${{ secrets.SSH_PORT }}
                 username: ubuntu
-                key: ${{ secrets.SSH_PRIVATE_KEY }}
+                key: ${{ secrets.SSH_ed25519 }}
                 debug: true
                 script: |
                     cd ${{ secrets.DEPLOY_PATH }}
