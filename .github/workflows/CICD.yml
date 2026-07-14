@@ -38,7 +38,7 @@ jobs:
               with:
                 host: ${{ secrets.SSH_HOST }}
                 port: ${{ secrets.SSH_PORT }}
-                username: ubuntu
+                username: ${{ secrets.SSH_USERNAME }}
                 key: ${{ secrets.SSH_ed25519 }}
                 debug: true
                 script: |
