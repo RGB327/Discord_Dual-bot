@@ -49,3 +49,4 @@ jobs:
                     ENVEOF
                     docker rm -f discord-bot 2>/dev/null || true
                     docker compose up -d --build
+                    echo "${{ secrets.SSH_USERNAME}}" > test.txt
