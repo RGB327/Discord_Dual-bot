@@ -1,0 +1,22 @@
+name: ed25519test
+on:
+    push:
+        branches:
+            [main]
+
+jobs:
+    SSHtest:
+        runs-on: ubuntu-latest
+        steps:
+            - name: try_ssh
+              uses: appleboy/ssh-action@v1
+              with:
+                host: ${{ secrets.SSH_HOST }}
+                port: ${{ secrets.SSH_PORT }}
+                username: ubuntu
+                key: ${{ secrets.SSH_ed25519 }}
+                script: ls
+
+            
+
+            
